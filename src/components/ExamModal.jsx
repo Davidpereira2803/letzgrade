@@ -1,12 +1,10 @@
 import { useState } from "react";
+import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore";
+
 import Button from "./Button";
 
 const ExamModal = ({ isOpen, onClose, course }) => {
-  const [exams, setExams] = useState([
-    { id: 1, name: "Midterm", grade: 85, weight: 40, scale: 100 },
-    { id: 2, name: "Final Exam", grade: 90, weight: 60, scale: 100 },
-  ]);
-
+  const [exams, setExams] = useState([]);
   const [selectedExam, setSelectedExam] = useState(null);
   const [newExam, setNewExam] = useState("");
   const [newGrade, setNewGrade] = useState("");
@@ -22,7 +20,7 @@ const ExamModal = ({ isOpen, onClose, course }) => {
   };
 
   const handleSaveExam = () => {
-    if (newExam.trim() === "" || newGrade === "" || newWeight === ""){ alert("Please enter valid exam details."); return;}
+    if (!newExam.trim() || !newGrade || !newWeight) return;
 
     if(selectedExam){
         setExams(exams.map((exam) =>
@@ -32,8 +30,13 @@ const ExamModal = ({ isOpen, onClose, course }) => {
           ));
           setSelectedExam(null);
     } else {
-        const newId = exams.length + 1;
-        setExams([...exams, { id: newId, name: newExam, grade: parseFloat(newGrade), weight: parseFloat(newWeight), scale: gradingScale }]);
+      addDoc(collection(db, "users", auth.currentUser.uid, "studyPrograms", selectedProgram.id, "semesters", selectedSemester.id, "courses", selectedCourse.id, "exams"), {
+        name: newExam,
+        grade: parseFloat(newGrade),
+        weight: parseFloat(newWeight),
+        scale: gradingScale,
+      });
+      
     }
 
     setNewExam("");

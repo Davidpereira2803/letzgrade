@@ -1,25 +1,27 @@
 import { useState } from "react";
+import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore";
 import Button from "./Button";
 import ExamModal from "./ExamModal";
 
 const CourseModal = ({ isOpen, onClose, semester }) => {
-  const [courses, setCourses] = useState([
-    { id: 1, name: "Math 101", credits: 3, exams: [{ grade: 85, weight: 40 }, { grade: 90, weight: 60 }] },
-    { id: 2, name: "Physics 102", credits: 4, exams: [{ grade: 78, weight: 50 }, { grade: 88, weight: 50 }] },
-  ]);
+  const [courses, setCourses] = useState([]);
   const [newCourse, setNewCourse] = useState("");
   const [newCredits, setNewCredits] = useState("");
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isExamModalOpen, setIsExamModalOpen] = useState(false);
 
-  const handleAddCourse = () => {
-    if (newCourse.trim() === "" || newCredits.trim() === "") return;
-
-    const newId = courses.length + 1;
-    setCourses([...courses, { id: newId, name: newCourse, credits: parseInt(newCredits), exams: [] }]);
+  const handleAddCourse = async () => {
+    if (!newCourse.trim() || !newCredits) return;
+  
+    await addDoc(collection(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses"), {
+      name: newCourse,
+      credits: parseInt(newCredits),
+    });
+  
     setNewCourse("");
     setNewCredits("");
   };
+  
 
   const calculateFinalGrade = (exams) => {
     if (exams.length === 0) return "N/A";

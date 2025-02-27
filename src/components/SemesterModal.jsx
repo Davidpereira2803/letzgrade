@@ -1,22 +1,49 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { doc, setDoc, collection, addDoc, getDocs, onSnapshot } from "firebase/firestore";
+import { auth, db } from "../services/firebase";
 import Button from "./Button";
 import CourseModal from "./CourseModal";
 
 const SemesterModal = ({ isOpen, onClose, studyProgram }) => {
-  const [semesters, setSemesters] = useState([
-    { id: 1, name: "Semester 1" },
-    { id: 2, name: "Semester 2" },
-  ]);
+  const [semesters, setSemesters] = useState([]);
   const [newSemester, setNewSemester] = useState("");
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
 
-  const handleAddSemester = () => {
-    if (newSemester.trim() === "") return;
+  const userId = auth.currentUser?.uid;
+  const studyProgramId = studyProgram?.id;
 
-    const newId = semesters.length + 1;
-    setSemesters([...semesters, { id: newId, name: newSemester }]);
+  useEffect(() => {
+    if (!userId || !studyProgramId) return;
+  
+    const unsubscribe = onSnapshot(
+      collection(db, "users", userId, "studyPrograms", studyProgramId, "semesters"),
+      (snapshot) => {
+        const semesterList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setSemesters(semesterList);
+      }
+    );
+  
+    return () => unsubscribe();
+  }, [userId, studyProgramId]);
+
+  const handleAddSemester = async () => {
+    if (!newSemester.trim()) return;
+  
+    await addDoc(collection(db, "users", userId, "studyPrograms", studyProgramId, "semesters"), {
+      name: newSemester,
+    });
+  
     setNewSemester("");
+  };
+  
+  const calculateSemesterGrade = (courses = []) => {
+    if (courses.length === 0) return "N/A";
+  
+    const totalWeightedGrade = courses.reduce((sum, course) => sum + (course.finalGrade * course.credits), 0);
+    const totalCredits = courses.reduce((sum, course) => sum + course.credits, 0);
+  
+    return totalCredits > 0 ? (totalWeightedGrade / totalCredits).toFixed(2) : "N/A";
   };
 
   const handleSemesterClick = (semester) => {
@@ -43,10 +70,11 @@ const SemesterModal = ({ isOpen, onClose, studyProgram }) => {
             semesters.map((semester) => (
               <button 
                 key={semester.id} 
-                className="bg-gray-200 p-2 rounded-md mb-2 w-full text-left hover:bg-gray-300 transition"
+                className="bg-gray-200 p-2 rounded-md mb-2 w-full text-left hover:bg-gray-300 transition flex justify-between"
                 onClick={() => handleSemesterClick(semester)}
               >
-                {semester.name}
+                  <span>{semester.name}</span>
+                  <span>Final Grade: {calculateSemesterGrade(semester.courses)}</span>
               </button>
             ))
           ) : (

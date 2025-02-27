@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { auth } from "../services/firebase";
+import { auth, db } from "../services/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 
 const SignupModal = ({ isOpen, onClose }) => {
@@ -25,6 +26,12 @@ const SignupModal = ({ isOpen, onClose }) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+
+      await setDoc(doc(db, "users", userid), {
+        fullName: name,
+        email,
+      });
+      
 
       await updateProfile(user, {
         displayName: name,
