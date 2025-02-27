@@ -1,9 +1,33 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { auth } from "../services/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const SignupModal = ({ isOpen, onClose }) => {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+
+    if(password !== confirmPassword){
+      setError("Passwords do not match!")
+      return;
+    }
+
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      onClose();
+      alert("Account created successfully! You can now log in.");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -26,7 +50,9 @@ const SignupModal = ({ isOpen, onClose }) => {
 
         <h2 className="text-2xl font-bold mb-4 text-center">Sign Up</h2>
 
-        <form>
+        {error && <p className="text-red-500 text-center">{error}</p>}
+
+        <form onSubmit={handleSignUp}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Full Name
@@ -35,6 +61,8 @@ const SignupModal = ({ isOpen, onClose }) => {
               type="text" 
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
               placeholder="Enter your full name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
             />
           </div>
@@ -47,6 +75,8 @@ const SignupModal = ({ isOpen, onClose }) => {
               type="email" 
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
               placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -59,6 +89,8 @@ const SignupModal = ({ isOpen, onClose }) => {
               type={showPassword ? "text" : "password"} 
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none pr-12" 
               placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
             <button 
@@ -78,6 +110,8 @@ const SignupModal = ({ isOpen, onClose }) => {
               type={showConfirmPassword ? "text" : "password"} 
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none pr-12" 
               placeholder="Confirm your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
             <button 

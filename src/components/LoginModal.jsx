@@ -1,8 +1,27 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { auth} from "../services/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const LoginModal = ({ isOpen, onClose }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      onClose();
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Invalid email or password.");
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -25,7 +44,9 @@ const LoginModal = ({ isOpen, onClose }) => {
 
         <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
 
-        <form>
+        {error && <p className="text-red-500 text-center">{error}</p>}
+
+        <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Email
@@ -34,6 +55,8 @@ const LoginModal = ({ isOpen, onClose }) => {
               type="email" 
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
               placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
@@ -46,6 +69,8 @@ const LoginModal = ({ isOpen, onClose }) => {
               type={showPassword ? "text" : "password"} 
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none pr-10"
               placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
             <button 
