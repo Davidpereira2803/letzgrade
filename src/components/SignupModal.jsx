@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { auth } from "../services/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 const SignupModal = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState("");
@@ -11,6 +12,7 @@ const SignupModal = ({ isOpen, onClose }) => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -21,9 +23,17 @@ const SignupModal = ({ isOpen, onClose }) => {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await updateProfile(user, {
+        displayName: name,
+      });
+
+      navigate("/dashboard");
+
       onClose();
-      alert("Account created successfully! You can now log in.");
+      //alert("Account created successfully! You can now log in.");
     } catch (err) {
       setError(err.message);
     }
