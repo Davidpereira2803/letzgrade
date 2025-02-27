@@ -30,9 +30,18 @@ const Navbar = () => {
         <Link to="/" className="text-2xl font-bold">LetzGrade</Link>
 
         <div className="hidden md:flex space-x-6">
-          <Link to="/" className="hover:text-gray-600 font-bold">Home</Link>
-          <Link to="/about" className="hover:text-gray-600 font-bold">About Us</Link>
-          <Link to="/contact" className="hover:text-gray-600 font-bold">Contact</Link>
+          {user ? (
+            <>
+              <Link to="/" className="hover:text-gray-600 font-bold">Home</Link>
+              <Link to="/dashboard" className="hover:text-gray-600 font-bold">Dashboard</Link>
+            </>
+          ):(
+            <>
+              <Link to="/" className="hover:text-gray-600 font-bold">Home</Link>
+              <Link to="/about" className="hover:text-gray-600 font-bold">About Us</Link>
+              <Link to="/contact" className="hover:text-gray-600 font-bold">Contact</Link>
+            </>
+          )}
         </div>
 
         <div className="space-x-4">
