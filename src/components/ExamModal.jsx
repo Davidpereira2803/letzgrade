@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore";
-
+import { useEffect, useState } from "react";
+import { doc, setDoc, collection, addDoc, getDocs, onSnapshot, updateDoc } from "firebase/firestore";
+import {auth, db } from "../services/firebase";
 import Button from "./Button";
 
 const ExamModal = ({ isOpen, onClose, course }) => {
@@ -11,6 +11,44 @@ const ExamModal = ({ isOpen, onClose, course }) => {
   const [newWeight, setNewWeight] = useState("");
   const [gradingScale, setGradingScale] = useState(100);
 
+  const userId = auth.currentUser?.uid;
+  const studyProgramId = course?.studyProgramId ?? "";
+  const semesterId = course?.semesterId ?? "";
+  const courseId = course?.id;
+
+  useEffect(() => {
+    if (!userId || !studyProgramId || !semesterId || !courseId) return;
+  
+    const unsubscribe = onSnapshot(
+      collection(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses", courseId, "exams"),
+      (snapshot) => {
+        const examList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setExams(examList);
+
+        updateFinalGrade(examList);
+      }
+    );
+  
+    return () => unsubscribe();
+  }, [userId, studyProgramId, semesterId, courseId]);
+
+  const updateFinalGrade = async (examList) => {
+    if (!courseId || !userId || !studyProgramId || !semesterId) return;
+    
+    const totalWeightedScore = examList.reduce((sum, exam) => sum + exam.grade * (exam.weight / 100), 0);
+    const totalWeight = examList.reduce((sum, exam) => sum + (exam.weight / 100), 0);
+    const finalGrade = totalWeight > 0 ? (totalWeightedScore / totalWeight).toFixed(2) : "N/A";
+  
+    try {
+      await updateDoc(doc(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses", courseId), {
+        finalGrade: finalGrade
+      });
+    } catch (error) {
+      console.error("🔥 Error updating final grade:", error);
+    }
+  };
+  
+
   const handleExamClick = (exam) => {
     setSelectedExam(exam);
     setNewExam(exam.name);
@@ -19,31 +57,36 @@ const ExamModal = ({ isOpen, onClose, course }) => {
     setGradingScale(exam.scale);
   };
 
-  const handleSaveExam = () => {
-    if (!newExam.trim() || !newGrade || !newWeight) return;
-
-    if(selectedExam){
-        setExams(exams.map((exam) =>
-            exam.id === selectedExam.id
-              ? { ...exam, name: newExam, grade: parseFloat(newGrade), weight: parseFloat(newWeight), scale: gradingScale }
-              : exam
-          ));
-          setSelectedExam(null);
-    } else {
-      addDoc(collection(db, "users", auth.currentUser.uid, "studyPrograms", selectedProgram.id, "semesters", selectedSemester.id, "courses", selectedCourse.id, "exams"), {
-        name: newExam,
-        grade: parseFloat(newGrade),
-        weight: parseFloat(newWeight),
-        scale: gradingScale,
-      });
-      
+  const handleSaveExam = async () => {
+    if (!newExam.trim() || !newGrade || !newWeight || !userId || !studyProgramId || !semesterId || !courseId) return;
+   
+    try {
+      if (selectedExam) {
+        await setDoc(doc(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses", courseId, "exams", selectedExam.id), {
+          name: newExam,
+          grade: parseFloat(newGrade),
+          weight: parseFloat(newWeight),
+          scale: gradingScale,
+        });
+      } else {
+        await addDoc(collection(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses", courseId, "exams"), {
+          name: newExam,
+          grade: parseFloat(newGrade),
+          weight: parseFloat(newWeight),
+          scale: gradingScale,
+        });
+      }
+    } catch (error) {
+      console.error("Error saving exam:", error);
     }
-
+  
     setNewExam("");
     setNewGrade("");
     setNewWeight("");
     setGradingScale(100);
+    setSelectedExam(null);
   };
+  
 
   if (!isOpen || !course) return null;
 

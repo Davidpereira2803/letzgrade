@@ -101,7 +101,7 @@ const SemesterModal = ({ isOpen, onClose, studyProgram }) => {
       <CourseModal 
         isOpen={isCourseModalOpen} 
         onClose={() => setIsCourseModalOpen(false)}
-        semester={selectedSemester}
+        semester={{ ...selectedSemester, studyProgramId: studyProgram?.id }}
       />
     </div>
   );

@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { doc, setDoc, collection, addDoc, getDocs, onSnapshot } from "firebase/firestore";
+import { auth, db} from "../services/firebase";
 import Button from "./Button";
 import ExamModal from "./ExamModal";
 
@@ -10,8 +11,31 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isExamModalOpen, setIsExamModalOpen] = useState(false);
 
+  const userId = auth.currentUser?.uid;
+  const studyProgramId = semester?.studyProgramId ?? "";
+  const semesterId = semester?.id;
+
+  useEffect(() => {
+    if (!userId || !studyProgramId || !semesterId) return;
+  
+    const unsubscribe = onSnapshot(
+      collection(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses"),
+      (snapshot) => {
+        const courseList = snapshot.docs.map((doc) => ({ 
+          id: doc.id, 
+          ...doc.data(),
+          finalGrade: doc.data().finalGrade ?? "N/A"
+        }));
+        setCourses(courseList);
+      }
+    );
+  
+    return () => unsubscribe();
+  }, [userId, studyProgramId, semesterId]);
+  
+
   const handleAddCourse = async () => {
-    if (!newCourse.trim() || !newCredits) return;
+    if (!newCourse.trim() || !newCredits || !userId || !studyProgramId || !semesterId) return;
   
     await addDoc(collection(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses"), {
       name: newCourse,
@@ -20,16 +44,6 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
   
     setNewCourse("");
     setNewCredits("");
-  };
-  
-
-  const calculateFinalGrade = (exams) => {
-    if (exams.length === 0) return "N/A";
-
-    const totalWeightedScore = exams.reduce((sum, exam) => sum + exam.grade * (exam.weight / 100), 0);
-    const totalWeight = exams.reduce((sum, exam) => sum + (exam.weight / 100), 0);
-
-    return totalWeight > 0 ? (totalWeightedScore / totalWeight).toFixed(2) : "N/A";
   };
 
   const handleCourseClick = (course) => {
@@ -60,7 +74,7 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
                 onClick={ () => handleCourseClick(course)}
                 >
                 <span>{course.name} ({course.credits} ECTS)</span>
-                <span>Final Grade: {calculateFinalGrade(course.exams)}</span>
+                <span>Final Grade: {course.finalGrade}</span>
               </button>
             ))
           ) : (
@@ -93,7 +107,11 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
       <ExamModal 
         isOpen={isExamModalOpen} 
         onClose={() => setIsExamModalOpen(false)}
-        course={selectedCourse}
+        course={{ 
+          ...selectedCourse, 
+          studyProgramId: semester?.studyProgramId, 
+          semesterId: semester?.id 
+        }}
       />
     </div>
   );
