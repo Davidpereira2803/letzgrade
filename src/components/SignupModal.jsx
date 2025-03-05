@@ -25,9 +25,16 @@ const SignupModal = ({ isOpen, onClose }) => {
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
 
-      await setDoc(doc(db, "users", userid), {
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const user = userCredential.user;
+      if (!user) {
+        setError("User ID not available after sign-up. Please try again.");
+        return;
+      }
+
+      await setDoc(doc(db, "users", user.uid), {
         fullName: name,
         email,
       });

@@ -32,7 +32,13 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
   
     return () => unsubscribe();
   }, [userId, studyProgramId, semesterId]);
+
+  const formatFinalGrade = (finalGrade, exams) => {
+    if (!exams.length) return "N/A";
   
+    const scale = exams[0]?.scale || 100;
+    return `${finalGrade} / ${scale}`;
+  };  
 
   const handleAddCourse = async () => {
     if (!newCourse.trim() || !newCredits || !userId || !studyProgramId || !semesterId) return;
@@ -55,7 +61,7 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg min-h-[400px] flex flex-col justify-between relative">
         <button 
           className="absolute top-2 right-2 text-purple-500 hover:text-purple-700 text-xl"
           onClick={onClose}
@@ -74,7 +80,7 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
                 onClick={ () => handleCourseClick(course)}
                 >
                 <span>{course.name} ({course.credits} ECTS)</span>
-                <span>Final Grade: {course.finalGrade}</span>
+                <span>Final Grade: {formatFinalGrade(course.finalGrade, course.exams || [])}</span>
               </button>
             ))
           ) : (
