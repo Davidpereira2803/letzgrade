@@ -31,6 +31,7 @@ const Home = () => {
           text="🚀 Get Started"
           onClick={() => setIsGetStartedOpen(true)}
           className="bg-[#C0C0C0] bg-opacity-50 hover:bg-[#CA4B4B] text-white px-6 py-3 rounded-lg transition duration-300"
+          
         />
       </div>
 

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import { auth, db } from "../services/firebase";
-import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore";
+import { doc, updateDoc, collection, getDocs, onSnapshot } from "firebase/firestore";
 import SemesterModal from "./SemesterModal";
 
 const StudyPrograms = () => {
@@ -10,15 +10,69 @@ const StudyPrograms = () => {
   const userId = auth.currentUser?.uid;
 
   useEffect(() => {
-    if (userId) {
-      const fetchPrograms = async () => {
-        const querySnapshot = await getDocs(collection(db, "users", userId, "studyPrograms"));
-        const programs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    if (!userId) return;
+
+    const unsubscribe = onSnapshot(collection(db, "users", userId, "studyPrograms"), async (snapshot) => {
+        const programs = await Promise.all(snapshot.docs.map(async (docSnapshot) => {
+            const programData = { id: docSnapshot.id, ...docSnapshot.data() };
+
+            const semestersRef = collection(db, "users", userId, "studyPrograms", docSnapshot.id, "semesters");
+
+            const semestersSnapshot = await getDocs(semestersRef);
+            programData.semesters = semestersSnapshot.docs.map((semesterDoc) => ({
+                id: semesterDoc.id,
+                ...semesterDoc.data(),
+                finalGrade: semesterDoc.data().finalGrade ?? "N/A",
+                credits: semesterDoc.data().credits ?? 30,
+            }));
+
+            const computedGPA = calculateGPA(programData.semesters);
+
+            if (computedGPA !== programData.gpa) {
+                await updateGPA(programData.id, computedGPA);
+            }
+
+            programData.gpa = computedGPA;
+            return programData;
+        }));
+
         setStudyPrograms(programs);
-      };
-      fetchPrograms();
+    });
+
+    return () => unsubscribe();
+}, [userId]);
+
+
+  const calculateGPA = (semesters = []) => {
+    if (semesters.length === 0) return "N/A";
+
+    let totalWeightedGrade = 0;
+    let totalCredits = 0;
+
+    semesters.forEach((semester) => {
+        const semesterFinalGrade = parseFloat(semester.finalGrade);
+        const semesterCredits = parseFloat(semester.credits) || 30;
+
+        if (!isNaN(semesterFinalGrade) && semesterCredits > 0) {
+            totalWeightedGrade += semesterFinalGrade * semesterCredits;
+            totalCredits += semesterCredits;
+        }
+    });
+
+    return totalCredits > 0 ? (totalWeightedGrade / totalCredits).toFixed(2) : "N/A";
+};
+
+
+  const updateGPA = async (studyProgramId, gpa) => {
+    try {
+      const gpaToStore = gpa !== "N/A" ? parseFloat(gpa) : null;
+
+      await updateDoc(doc(db, "users", userId, "studyPrograms", studyProgramId), {
+        gpa: gpaToStore,
+      });
+    } catch (error) {
     }
-  }, [userId]);
+  };
 
   const handleProgramClick = (program) => {
     setSelectedProgram(program);
@@ -33,17 +87,19 @@ const StudyPrograms = () => {
             key={program.id}
             className="w-full bg-gray-200 p-4 rounded-lg mb-3 shadow-sm flex justify-between items-center hover:bg-gray-300 transition"
             onClick={() => handleProgramClick(program)}
-          >            
+          >
             <h3 className="text-lg font-semibold">{program.name}</h3>
-            <p className="text-gray-700 font-medium">GPA: {program.gpa.toFixed(2)}</p>
+            <p className="text-gray-700 font-medium">
+              GPA: {program.gpa !== null ? `${parseFloat(program.gpa * 100).toFixed(1)} / 100` : "N/A"}
+            </p>
           </button>
         ))
       ) : (
         <p className="text-gray-500 text-center">No study programs selected yet.</p>
       )}
 
-      <SemesterModal 
-        isOpen={isModalOpen} 
+      <SemesterModal
+        isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         studyProgram={selectedProgram}
       />

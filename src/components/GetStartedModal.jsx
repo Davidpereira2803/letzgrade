@@ -26,7 +26,7 @@ const GetStartedModal = ({ isOpen, onClose, onLoginOpen, onSignUpOpen }) => {
         <button 
           onClick={() => {
             onClose();
-            setTimeout(onSignUpOpen, 500); // ✅ Ensure Firebase updates before switching modal
+            setTimeout(onSignUpOpen, 500);
           }}
           className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mb-3"
         >

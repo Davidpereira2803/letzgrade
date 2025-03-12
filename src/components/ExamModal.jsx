@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { doc, setDoc, collection, addDoc, getDocs, onSnapshot, updateDoc } from "firebase/firestore";
+import { doc, setDoc, collection, addDoc, getDocs, onSnapshot, updateDoc, deleteDoc } from "firebase/firestore";
 import {auth, db } from "../services/firebase";
+import { FaTrash } from "react-icons/fa";
 import Button from "./Button";
 
 const ExamModal = ({ isOpen, onClose, course }) => {
@@ -35,19 +36,24 @@ const ExamModal = ({ isOpen, onClose, course }) => {
   const updateFinalGrade = async (examList) => {
     if (!courseId || !userId || !studyProgramId || !semesterId) return;
     
-    const totalWeightedScore = examList.reduce((sum, exam) => sum + exam.grade * (exam.weight / 100), 0);
-    const totalWeight = examList.reduce((sum, exam) => sum + (exam.weight / 100), 0);
+    let totalWeightedScore = 0;
+    let totalWeight = 0;
+
+    examList.forEach(exam => {
+        const normalizedGrade = (exam.grade / exam.scale) * 100;
+        totalWeightedScore += normalizedGrade * (exam.weight / 100);
+        totalWeight += exam.weight;
+    });
+
     const finalGrade = totalWeight > 0 ? (totalWeightedScore / totalWeight).toFixed(2) : "N/A";
-  
+
     try {
-      await updateDoc(doc(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses", courseId), {
-        finalGrade: finalGrade
-      });
+        await updateDoc(doc(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses", courseId), {
+            finalGrade: finalGrade
+        });
     } catch (error) {
-      console.error("🔥 Error updating final grade:", error);
     }
-  };
-  
+};
 
   const handleExamClick = (exam) => {
     setSelectedExam(exam);
@@ -77,7 +83,6 @@ const ExamModal = ({ isOpen, onClose, course }) => {
         });
       }
     } catch (error) {
-      console.error("Error saving exam:", error);
     }
   
     setNewExam("");
@@ -86,7 +91,15 @@ const ExamModal = ({ isOpen, onClose, course }) => {
     setGradingScale(100);
     setSelectedExam(null);
   };
-  
+
+  const handleDeleteExam = async (examId) => {
+      if (!userId || !studyProgramId || !semesterId || !courseId) return;
+
+      try {
+          await deleteDoc(doc(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses", courseId, "exams", examId));
+      } catch (error) {
+      }
+  };
 
   if (!isOpen || !course) return null;
 
@@ -105,14 +118,19 @@ const ExamModal = ({ isOpen, onClose, course }) => {
         <ul className="mb-4">
           {exams.length > 0 ? (
             exams.map((exam) => (
-              <button
-                key={exam.id}
-                className="bg-gray-200 p-2 rounded-md mb-2 w-full text-left hover:bg-gray-300 transition flex justify-between"
-                onClick={() => handleExamClick(exam)}
-                >
-                <span>{exam.name}</span>
-                <span>{exam.grade}/{exam.scale} ({exam.weight}%)</span>
-              </button>
+              <div key={exam.id} className="flex justify-between items-center bg-gray-200 p-2 rounded-md mb-2 w-full transition">
+                <button
+                  key={exam.id}
+                  className="bg-gray-200 p-2 rounded-md mb-2 w-full text-left hover:bg-gray-300 transition flex justify-between"
+                  onClick={() => handleExamClick(exam)}
+                  >
+                  <span>{exam.name}</span>
+                  <span>{exam.grade}/{exam.scale} ({exam.weight}%)</span>
+                </button>
+                <button onClick={() => handleDeleteExam(exam.id)} className="text-red-500 hover:text-red-700 flex items-center justify-center ml-2 -mt-1">
+                      <FaTrash size={16} />
+                </button>
+              </div>
             ))
           ) : (
             <p className="text-gray-500 text-center">No exams added yet.</p>

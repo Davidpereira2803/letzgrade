@@ -47,7 +47,6 @@ const SignupModal = ({ isOpen, onClose }) => {
       navigate("/dashboard");
 
       onClose();
-      //alert("Account created successfully! You can now log in.");
     } catch (err) {
       setError(err.message);
     }

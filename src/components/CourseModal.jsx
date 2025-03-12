@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { doc, setDoc, collection, addDoc, getDocs, onSnapshot } from "firebase/firestore";
+import { doc, setDoc, collection, addDoc, getDocs, onSnapshot, deleteDoc } from "firebase/firestore";
 import { auth, db} from "../services/firebase";
+import { FaTrash } from "react-icons/fa"
 import Button from "./Button";
 import ExamModal from "./ExamModal";
 
@@ -33,12 +34,9 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
     return () => unsubscribe();
   }, [userId, studyProgramId, semesterId]);
 
-  const formatFinalGrade = (finalGrade, exams) => {
-    if (!exams.length) return "N/A";
-  
-    const scale = exams[0]?.scale || 100;
-    return `${finalGrade} / ${scale}`;
-  };  
+  const formatFinalGrade = (finalGrade) => {
+    return finalGrade !== "N/A" ? `${(finalGrade * 100).toFixed(1)} / 100` : "N/A";
+};
 
   const handleAddCourse = async () => {
     if (!newCourse.trim() || !newCredits || !userId || !studyProgramId || !semesterId) return;
@@ -55,6 +53,24 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
   const handleCourseClick = (course) => {
     setSelectedCourse(course);
     setIsExamModalOpen(true);
+  };
+
+  const handleDeleteCourse = async (courseId) => {
+    if (!userId || !studyProgramId || !semesterId) return;
+
+    try {
+        const examsRef = collection(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses", courseId, "exams");
+        const examsSnapshot = await getDocs(examsRef);
+
+        const deletePromises = examsSnapshot.docs.map((examDoc) => 
+            deleteDoc(doc(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses", courseId, "exams", examDoc.id))
+        );
+
+        await Promise.all(deletePromises);
+
+        await deleteDoc(doc(db, "users", userId, "studyPrograms", studyProgramId, "semesters", semesterId, "courses", courseId));
+    } catch (error) {
+    }
   };
 
   if (!isOpen || !semester) return null;
@@ -74,14 +90,22 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
         <ul className="mb-4">
           {courses.length > 0 ? (
             courses.map((course) => (
-              <button
-                key={course.id}
-                className="bg-gray-200 p-2 rounded-md mb-2 w-full text-left hover:bg-gray-300 transition flex justify-between"
-                onClick={ () => handleCourseClick(course)}
+              <div key={course.id} className="flex justify-between items-center bg-gray-200 p-2 rounded-md mb-2 w-full transition">
+                <button
+                  key={course.id}
+                  className="bg-gray-200 p-2 rounded-md mb-2 w-full text-left hover:bg-gray-300 transition flex justify-between"
+                  onClick={ () => handleCourseClick(course)}
+                  >
+                  <span>{course.name} ({course.credits} ECTS)</span>
+                  <span>Final Grade: {formatFinalGrade(course.finalGrade)}</span>
+                </button>
+                <button 
+                  onClick={() => handleDeleteCourse(course.id)} 
+                  className="text-red-500 hover:text-red-700 flex items-center justify-center ml-2 -mt-1"
                 >
-                <span>{course.name} ({course.credits} ECTS)</span>
-                <span>Final Grade: {formatFinalGrade(course.finalGrade, course.exams || [])}</span>
-              </button>
+                  <FaTrash size={16} />
+                </button>
+              </div>
             ))
           ) : (
             <p className="text-gray-500 text-center">No courses added yet.</p>
