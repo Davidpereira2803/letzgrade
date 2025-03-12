@@ -44,7 +44,7 @@ const GpaChart = () => {
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="semester" />
-        <YAxis domain={[0, 100]} /> {/* Adjusted for /100 scale */}
+        <YAxis domain={[0, 100]} />
         <Tooltip />
         <Line type="monotone" dataKey="finalGrade" stroke="#8884d8" strokeWidth={2} dot={{ r: 5 }} />
       </LineChart>

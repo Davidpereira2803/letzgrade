@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { User, Settings } from "lucide-react";
 import Button from "./Button";
 import LoginModal from "./LoginModal";
 import SignupModal from "./SignupModal";
@@ -45,13 +46,24 @@ const Navbar = () => {
           )}
         </div>
 
-        <div className="space-x-4">
+        <div className="flex items-center space-x-4">
           {user ? (
             <>
-              <span className="text-sm">👋 {user.displayName || user.email}</span>
+              <span className="text-sm">
+                Welcome <span className="font-bold">{user.displayName || user.email}</span>
+              </span>
+
+              <Link to="/profile" className="hover:text-gray-600 flex items-center">
+                <User size={24} />
+              </Link>
+
+              <Link to="/settings" className="hover:text-gray-600 flex items-center">
+                <Settings size={24} />
+              </Link>
+
               <button 
                 onClick={handleLogout}
-                className="px-4 py-2 bg-red-500 rounded hover:bg-red-600"
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
               >
                 Log out
               </button>
@@ -67,6 +79,7 @@ const Navbar = () => {
             </>
           )}
         </div>
+
       </div>
     </nav>
 

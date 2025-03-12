@@ -22,7 +22,6 @@ const AddStudyProgram = () => {
       });
       navigate("/dashboard");
     } catch (error) {
-      console.error("Error adding study program:", error);
     } finally {
       setLoading(false);
     }
