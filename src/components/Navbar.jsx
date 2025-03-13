@@ -26,7 +26,7 @@ const Navbar = () => {
 
   return (
     <>
-    <nav className="bg-[#DFDFDF] text-black p-4">
+    <nav className="bg-[#DFDFDF] text-black p-4" style={{ backgroundColor: "rgba(211, 211, 211, 0.9)" }}>
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="text-2xl font-bold">LetzGrade</Link>
 
@@ -55,10 +55,6 @@ const Navbar = () => {
 
               <Link to="/profile" className="hover:text-gray-600 flex items-center">
                 <User size={24} />
-              </Link>
-
-              <Link to="/settings" className="hover:text-gray-600 flex items-center">
-                <Settings size={24} />
               </Link>
 
               <button 

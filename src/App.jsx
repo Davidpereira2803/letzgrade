@@ -1,16 +1,18 @@
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { Outlet, useLocation } from "react-router-dom";
+import bg from "./assets/llc.jpg";
 
 function App() {
   const location = useLocation();
 
+  const showBackground = ["/", "/contact", "/about"].includes(location.pathname)
   return (
     <div 
       className={`min-h-screen flex flex-col bg-[#DFDFDF] ${
-        location.pathname === "/" ? "bg-cover bg-center" : ""
+        showBackground ? "bg-cover bg-center" : ""
       }`}
-      style={location.pathname === "/" ? { backgroundImage: "url('/UniversityOfLuxembourg.jpg')" } : {}}
+      style={showBackground ? { backgroundImage: `url(${bg})` } : {}}
     >
       <Navbar />
       <main className="flex-grow flex">

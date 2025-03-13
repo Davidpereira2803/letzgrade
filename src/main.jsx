@@ -10,7 +10,6 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AddStudyProgram from "./pages/AddStudyProgram";
 import Profile from "./pages/Profile";
-import Settings from "./pages/Settings";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -25,7 +24,6 @@ createRoot(document.getElementById("root")).render(
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="addStudyProgram" element={<AddStudyProgram />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} />
           </Route>
         </Route>
       </Routes>
