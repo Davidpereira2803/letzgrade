@@ -1,10 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User, Menu, Languages, X } from "lucide-react";
-import Button from "./Button";
+import { User, Menu, X, Languages, LogOut } from "lucide-react";
 import LoginModal from "./LoginModal";
 import SignupModal from "./SignupModal";
-import GetStartedModal from "./GetStartedModal";
 import { monitorAuthState, logout } from "../services/firebase";
 import { useTranslation } from "react-i18next";
 
@@ -13,194 +11,230 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
-  const [isGetStartedOpen, setIsGetStartedOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
-  const dropdownRef = useRef(null);
 
   useEffect(() => {
     monitorAuthState(setUser);
   }, []);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownRef]);
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+    setMenuOpen(false);
+  };
 
   const changeLanguage = (lang) => {
     i18n.changeLanguage(lang);
     localStorage.setItem("language", lang);
     setIsDropdownOpen(false);
+    setMenuOpen(false);
   };
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/");
+  const toggleLoginModal = () => {
+    setIsLoginOpen(!isLoginOpen);
+    setMenuOpen(false);
+  };
+
+  const toggleSignupModal = () => {
+    setIsSignupOpen(!isSignupOpen);
+    setMenuOpen(false);
   };
 
   return (
-    <>
-      <nav className="bg-[#DFDFDF] text-black p-4 relative">
-        <div className="container mx-auto flex items-center justify-between">
-          
-          <button className="lg:hidden" onClick={() => setMenuOpen(!menuOpen)}>
-            {menuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
-
-          <div className="absolute left-1/2 transform -translate-x-1/2 lg:static lg:left-0 lg:transform-none">
-            <Link to="/" className="text-2xl font-bold">
-              LetzGrade
-            </Link>
+    <nav className="bg-gray-100 p-4 shadow-md" style={{ backgroundColor: "rgba(211, 211, 211, 0.9)" }}>
+      <div className="container mx-auto">
+        <div className="hidden lg:flex items-center justify-between">
+          <div className="flex-shrink-0">
+            <Link to="/" className="text-2xl font-bold">LetzGrade</Link>
           </div>
 
-          <div className="hidden lg:flex items-center space-x-6">
-            <Link to="/" className="hover:text-gray-600 font-bold">{t("home")}</Link>
+          <div className="flex justify-center space-x-8">
             {user ? (
               <>
-                <Link to="/dashboard" className="hover:text-gray-600 font-bold">{t("dashboard")}</Link>
-                <Link to="/addStudyProgram" className="hover:text-gray-600 font-bold">{t("addStudyProgram")}</Link>
-                <Link to="/profile" className="hover:text-gray-600 font-bold">{t("profile")}</Link>
+                <Link to="/" className="font-semibold hover:text-gray-600 transition">{t("home")}</Link>
+                <Link to="/dashboard" className="font-semibold hover:text-gray-600 transition">{t("dashboard")}</Link>
+                <Link to="/addStudyProgram" className="font-semibold hover:text-gray-600 transition">{t("addStudyProgram")}</Link>
               </>
             ) : (
               <>
-                <Link to="/about" className="hover:text-gray-600 font-bold">{t("aboutUs")}</Link>
-                <Link to="/contact" className="hover:text-gray-600 font-bold">{t("contact")}</Link>
+                <Link to="/" className="font-semibold hover:text-gray-600 transition">{t("home")}</Link>
+                <Link to="/about" className="font-semibold hover:text-gray-600 transition">{t("aboutUs")}</Link>
+                <Link to="/contact" className="font-semibold hover:text-gray-600 transition">{t("contact")}</Link>
               </>
             )}
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center space-x-4">
             {user ? (
-              <div className="flex items-center space-x-4">
+              <>
+                <span className="font-semibold text-gray-700">{t("welcome")}, {user.displayName}</span>
+                <Link to="/profile" className="font-semibold hover:text-gray-600 transition">{t("profile")}</Link>
                 <button 
-                  onClick={handleLogout}
-                  className="px-3 py-1 sm:px-4 sm:py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm sm:text-base"
+                  onClick={handleLogout} 
+                  className="bg-red-500 px-4 py-2 text-white rounded hover:bg-red-600 transition"
                 >
                   {t("logout")}
                 </button>
-
-                <div className="hidden lg:block relative" ref={dropdownRef}>
-                  <button 
-                    className="text-black flex items-center"
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  >
-                    <Languages size={20} />
-                  </button>
-
-                  {isDropdownOpen && (
-                    <div className="absolute top-full right-0 mt-2 bg-white border shadow-lg rounded w-40 z-50">
-                      <button className="block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left"
-                        onClick={() => changeLanguage("en")}>
-                        🇬🇧 English
-                      </button>
-                      <button className="block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left"
-                        onClick={() => changeLanguage("fr")}>
-                        🇫🇷 Français
-                      </button>
-                      <button className="block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left"
-                        onClick={() => changeLanguage("de")}>
-                        🇩🇪 Deutsch
-                      </button>
-                      <button className="block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left"
-                        onClick={() => changeLanguage("lux")}>
-                        🇱🇺 Lëtzebuergesch
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
+              </>
             ) : (
-              <div className="hidden lg:flex items-center space-x-4">
-                <span 
-                  onClick={() => setIsLoginOpen(true)} 
-                  className="hover:text-gray-600 cursor-pointer"
+              <>
+                <button 
+                  onClick={toggleLoginModal} 
+                  className="font-semibold hover:text-gray-600 transition"
                 >
                   {t("login")}
-                </span>
-                
-                <Button 
-                  text={t("signup")} 
-                  className="hover:bg-[#CA4B4B] text-sm" 
-                  onClick={() => setIsSignupOpen(true)}
-                />
-              </div>
+                </button>
+                <button 
+                  onClick={toggleSignupModal} 
+                  className="bg-red-500 px-4 py-2 text-white rounded hover:bg-red-600 transition"
+                >
+                  {t("signup")}
+                </button>
+              </>
+            )}
+            
+            <div className="relative">
+              <button 
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="p-2 hover:bg-gray-200 rounded-full transition"
+              >
+                <Languages size={20} />
+              </button>
+              {isDropdownOpen && (
+                <div className="absolute top-full right-0 mt-2 bg-white border shadow-lg rounded-md z-50">
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-100 transition" onClick={() => changeLanguage("en")}>
+                    English
+                  </button>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-100 transition" onClick={() => changeLanguage("fr")}>
+                    Français
+                  </button>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-100 transition" onClick={() => changeLanguage("de")}>
+                    Deutsch
+                  </button>
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-100 transition" onClick={() => changeLanguage("lux")}>
+                    Lëtzebuergesch
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex lg:hidden items-center justify-between">
+          <button 
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="p-2 hover:bg-gray-200 rounded-full transition"
+          >
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+
+          <div className="text-center">
+            <Link to="/" className="text-2xl font-bold">LetzGrade</Link>
+          </div>
+
+          <div>
+            {user ? (
+              <button 
+                onClick={handleLogout}
+                className="p-2 hover:bg-gray-200 rounded-full text-red-500 transition"
+              >
+                <LogOut size={24} />
+              </button>
+            ) : (
+              <div className="w-8 h-8"></div> // Empty div for layout balance
             )}
           </div>
         </div>
 
+        {/* Mobile/Tablet Menu */}
         {menuOpen && (
-          <div className="lg:hidden bg-[#DFDFDF] shadow-lg rounded p-4 mt-2 absolute left-0 right-0 z-50">
-            {user ? (
-              <>
-                <Link to="/" className="block py-2 hover:text-gray-600 font-bold">{t("home")}</Link>
-                <Link to="/dashboard" className="block py-2 hover:text-gray-600 font-bold">{t("dashboard")}</Link>
-                <Link to="/addStudyProgram" className="block py-2 hover:text-gray-600 font-bold">{t("addStudyProgram")}</Link>
-                <Link to="/profile" className="block py-2 hover:text-gray-600 font-bold">{t("profile")}</Link>
+          <div className="lg:hidden mt-4 bg-white rounded-md shadow-lg overflow-hidden">
+            <div className="p-4 space-y-3 border-b">
+              {user ? (
+                <div className="flex items-center space-x-2 pb-2">
+                  <User size={20} className="text-gray-600" />
+                  <span className="font-semibold">{user.displayName}</span>
+                </div>
+              ) : null}
+              
+              <div className="space-y-2">
+                <Link to="/" className="block py-2 font-semibold" onClick={() => setMenuOpen(false)}>
+                  {t("home")}
+                </Link>
                 
-                <div className="py-2 border-t mt-2 pt-4">
-                  <p className="text-gray-600 mb-2">{t("language")}</p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button 
-                      className="px-3 py-2 text-sm hover:bg-gray-200 text-left rounded border"
-                      onClick={() => changeLanguage("en")}>
-                      🇬🇧 English
+                {user ? (
+                  <>
+                    <Link to="/dashboard" className="block py-2 font-semibold" onClick={() => setMenuOpen(false)}>
+                      {t("dashboard")}
+                    </Link>
+                    <Link to="/addStudyProgram" className="block py-2 font-semibold" onClick={() => setMenuOpen(false)}>
+                      {t("addStudyProgram")}
+                    </Link>
+                    <Link to="/profile" className="block py-2 font-semibold" onClick={() => setMenuOpen(false)}>
+                      {t("profile")}
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link to="/about" className="block py-2 font-semibold" onClick={() => setMenuOpen(false)}>
+                      {t("aboutUs")}
+                    </Link>
+                    <Link to="/contact" className="block py-2 font-semibold" onClick={() => setMenuOpen(false)}>
+                      {t("contact")}
+                    </Link>
+                    <button onClick={toggleLoginModal} className="block py-2 font-semibold w-full text-left">
+                      {t("login")}
                     </button>
-                    <button 
-                      className="px-3 py-2 text-sm hover:bg-gray-200 text-left rounded border"
-                      onClick={() => changeLanguage("fr")}>
-                      🇫🇷 Français
+                    <button onClick={toggleSignupModal} className="block py-2 font-semibold w-full text-left">
+                      {t("signup")}
                     </button>
-                    <button 
-                      className="px-3 py-2 text-sm hover:bg-gray-200 text-left rounded border"
-                      onClick={() => changeLanguage("de")}>
-                      🇩🇪 Deutsch
-                    </button>
-                    <button 
-                      className="px-3 py-2 text-sm hover:bg-gray-200 text-left rounded border"
-                      onClick={() => changeLanguage("lux")}>
-                      🇱🇺 Lëtzebuergesch
-                    </button>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <Link to="/" className="block py-2 hover:text-gray-600 font-bold">{t("home")}</Link>
-                <Link to="/about" className="block py-2 hover:text-gray-600 font-bold">{t("aboutUs")}</Link>
-                <Link to="/contact" className="block py-2 hover:text-gray-600 font-bold">{t("contact")}</Link>
-                <div className="flex flex-col space-y-2 mt-4">
-                  <span 
-                    onClick={() => setIsLoginOpen(true)} 
-                    className="py-2 text-center cursor-pointer hover:text-gray-600"
-                  >
-                    {t("login")}
-                  </span>
-                  
-                  <Button 
-                    text={t("signup")} 
-                    className="hover:bg-[#CA4B4B] text-sm w-full" 
-                    onClick={() => setIsSignupOpen(true)}
-                  />
-                </div>
-              </>
-            )}
+                  </>
+                )}
+              </div>
+            </div>
+            
+            {/* Language Options in Mobile Menu */}
+            <div className="p-4 border-t">
+              <p className="font-semibold mb-2 text-gray-600 flex items-center">
+                <Languages size={16} className="mr-2" /> {t("selectLanguage")}
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <button 
+                  className="text-left px-3 py-2 rounded hover:bg-gray-100 transition"
+                  onClick={() => changeLanguage("en")}
+                >
+                  🇬🇧 English
+                </button>
+                <button 
+                  className="text-left px-3 py-2 rounded hover:bg-gray-100 transition"
+                  onClick={() => changeLanguage("fr")}
+                >
+                  🇫🇷 Français
+                </button>
+                <button 
+                  className="text-left px-3 py-2 rounded hover:bg-gray-100 transition"
+                  onClick={() => changeLanguage("de")}
+                >
+                  🇩🇪 Deutsch
+                </button>
+                <button 
+                  className="text-left px-3 py-2 rounded hover:bg-gray-100 transition"
+                  onClick={() => changeLanguage("lux")}
+                >
+                  🇱🇺 Lëtzebuergesch
+                </button>
+              </div>
+            </div>
           </div>
         )}
-      </nav>
+      </div>
 
-      {isLoginOpen && <LoginModal setIsOpen={setIsLoginOpen} />}
-      {isSignupOpen && <SignupModal setIsOpen={setIsSignupOpen} />}
-      {isGetStartedOpen && <GetStartedModal setIsOpen={setIsGetStartedOpen} />}
-    </>
+      {/* Modals */}
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      <SignupModal isOpen={isSignupOpen} onClose={() => setIsSignupOpen(false)} />
+    </nav>
   );
 };
 
