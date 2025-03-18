@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { auth, db } from "../services/firebase";
+import { auth, db } from "../../services/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";

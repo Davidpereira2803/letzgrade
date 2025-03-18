@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { collection, addDoc, getDocs, onSnapshot, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { auth, db } from "../services/firebase";
+import { auth, db } from "../../services/firebase";
 import { FaTrash } from "react-icons/fa";
-import Button from "./Button";
+import Button from "../ui/Button";
 import CourseModal from "./CourseModal";
 
 const SemesterModal = ({ isOpen, onClose, studyProgram }) => {

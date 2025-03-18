@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "../i18n";
-import Button from "../components/Button";
-import GetStartedModal from "../components/GetStartedModal";
-import LoginModal from "../components/LoginModal";
-import SignupModal from "../components/SignupModal";
+import Button from "../components/ui/Button";
+import GetStartedModal from "../components/modals/GetStartedModal";
+import LoginModal from "../components/modals/LoginModal";
+import SignupModal from "../components/modals/SignupModal";
 
 const Home = () => {
   const [isGetStartedOpen, setIsGetStartedOpen] = useState(false);

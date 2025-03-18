@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { auth, db } from "../services/firebase";
 import { doc, updateDoc, collection, getDocs, onSnapshot } from "firebase/firestore";
-import SemesterModal from "./SemesterModal";
+import SemesterModal from "./modals/SemesterModal";
 
 const StudyPrograms = () => {
   const [selectedProgram, setSelectedProgram] = useState(null);

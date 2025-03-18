@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { doc, setDoc, collection, addDoc, getDocs, onSnapshot, updateDoc, deleteDoc } from "firebase/firestore";
-import {auth, db } from "../services/firebase";
+import {auth, db } from "../../services/firebase";
 import { FaTrash } from "react-icons/fa";
-import Button from "./Button";
+import Button from "../ui/Button";
 
 const ExamModal = ({ isOpen, onClose, course }) => {
   const [exams, setExams] = useState([]);

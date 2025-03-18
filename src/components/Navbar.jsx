@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, Menu, X, Languages, LogOut } from "lucide-react";
-import LoginModal from "./LoginModal";
-import SignupModal from "./SignupModal";
+import LoginModal from "./modals/LoginModal";
+import SignupModal from "./modals/SignupModal";
 import { monitorAuthState, logout } from "../services/firebase";
 import { useTranslation } from "react-i18next";
 

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../services/firebase";
 import { collection, addDoc } from "firebase/firestore";
-import Button from "../components/Button";
+import Button from "../components/ui/Button";
 
 const AddStudyProgram = () => {
   const [programName, setProgramName] = useState("");
