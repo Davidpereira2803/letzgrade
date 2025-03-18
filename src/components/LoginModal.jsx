@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { auth} from "../services/firebase";
+import { auth } from "../services/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 const LoginModal = ({ isOpen, onClose }) => {

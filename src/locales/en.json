@@ -2,6 +2,26 @@
     "welcome": "Welcome to LetzGrade",
     "slogan": "Track your grades efficiently.",
     "contact": "Contact Us",
-    "about": "About Us"
+    "about": "About Us",
+    "footernote" : "Developed & Maintained by David Pereira de Magalhaes",
+    "getstarted": " Get Started",
+    "login": "Log in",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "enteremail": "Enter your email",
+    "enterpassword": "Enter your password",
+    "forgotpassword": "Forgot Password?",
+    "fullname": "Full Name",
+    "confirmpassword": "Confirm Password",
+    "logout": "Log out",
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "addstudyprogram": "Add Study Program",
+    "semestergrades": "Semester Grades",
+    "studyprogram": "Study Program",
+    "nostudyprogramselectedyet": "No study program selected yet.",
+    "studyprogramname": "Study Program Name",
+    "welcome2": "Welcome"
   }
   
