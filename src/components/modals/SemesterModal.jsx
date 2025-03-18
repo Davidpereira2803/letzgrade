@@ -4,8 +4,10 @@ import { auth, db } from "../../services/firebase";
 import { FaTrash } from "react-icons/fa";
 import Button from "../ui/Button";
 import CourseModal from "./CourseModal";
+import { useTranslation } from "react-i18next";
 
 const SemesterModal = ({ isOpen, onClose, studyProgram }) => {
+  const { t } = useTranslation();
   const [semesters, setSemesters] = useState([]);
   const [newSemester, setNewSemester] = useState("");
   const [selectedSemester, setSelectedSemester] = useState(null);
@@ -137,7 +139,7 @@ const SemesterModal = ({ isOpen, onClose, studyProgram }) => {
           ✖
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-center">{studyProgram.name} - Semesters</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">{t("semestersTitle", { studyProgram: studyProgram.name })}</h2>
 
         <ul className="mb-4">
           {semesters.length > 0 ? (
@@ -149,7 +151,7 @@ const SemesterModal = ({ isOpen, onClose, studyProgram }) => {
                   onClick={() => handleSemesterClick(semester)}
                 >
                   <span>{semester.name}</span>
-                  <span>Final Grade: {semester.finalGrade !== null ? `${parseFloat(semester.finalGrade * 100).toFixed(1)} / 100` : "N/A"}</span>
+                  <span>{t("finalGrade")}: {semester.finalGrade !== null ? `${parseFloat(semester.finalGrade * 100).toFixed(1)} / 100` : "N/A"}</span>
                   </button>
                   <button 
                   onClick={() => handleDeleteSemester(semester.id)} 
@@ -160,19 +162,19 @@ const SemesterModal = ({ isOpen, onClose, studyProgram }) => {
               </div>
             ))
           ) : (
-            <p className="text-gray-500 text-center">No semesters yet.</p>
+            <p className="text-gray-500 text-center">{t("noSemesters")}</p>
           )}
         </ul>
 
         <div className="flex flex-wrap gap-2 items-center justify-center">
           <input
             type="text"
-            placeholder="New Semester Name"
+            placeholder={t("newSemesterPlaceholder")}
             className="w-full px-3 py-2 border rounded-lg"
             value={newSemester}
             onChange={(e) => setNewSemester(e.target.value)}
           />
-          <Button text="Add" onClick={handleAddSemester} className="hover:bg-[#CA4B4B]" />
+          <Button text={t("addSemester")} onClick={handleAddSemester} className="hover:bg-[#CA4B4B]" />
         </div>
       </div>
 

@@ -3,8 +3,10 @@ import { doc, setDoc, collection, addDoc, getDocs, onSnapshot, updateDoc, delete
 import {auth, db } from "../../services/firebase";
 import { FaTrash } from "react-icons/fa";
 import Button from "../ui/Button";
+import { useTranslation } from "react-i18next";
 
 const ExamModal = ({ isOpen, onClose, course }) => {
+  const { t } = useTranslation();
   const [exams, setExams] = useState([]);
   const [selectedExam, setSelectedExam] = useState(null);
   const [newExam, setNewExam] = useState("");
@@ -113,7 +115,7 @@ const ExamModal = ({ isOpen, onClose, course }) => {
           ✖
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-center">{course.name} - Exams</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">{t("examsTitle", { course: course.name })}</h2>
 
         <ul className="mb-4">
           {exams.length > 0 ? (
@@ -133,14 +135,14 @@ const ExamModal = ({ isOpen, onClose, course }) => {
               </div>
             ))
           ) : (
-            <p className="text-gray-500 text-center">No exams added yet.</p>
+            <p className="text-gray-500 text-center">{t("noExams")}</p>
           )}
         </ul>
 
         <div className="flex flex-col gap-2">
           <input 
             type="text" 
-            placeholder="Exam Name" 
+            placeholder={t("examNamePlaceholder")} 
             className="w-full px-3 py-2 border rounded-lg"
             value={newExam}
             onChange={(e) => setNewExam(e.target.value)}
@@ -148,14 +150,14 @@ const ExamModal = ({ isOpen, onClose, course }) => {
           <div className="flex gap-2">
             <input 
               type="number" 
-              placeholder="Grade" 
+              placeholder={t("gradePlaceholder")} 
               className="w-1/2 px-3 py-2 border rounded-lg"
               value={newGrade}
               onChange={(e) => setNewGrade(e.target.value)}
             />
             <input 
               type="number" 
-              placeholder="Weight (%)" 
+              placeholder={t("weightPlaceholder")} 
               className="w-1/2 px-3 py-2 border rounded-lg"
               value={newWeight}
               onChange={(e) => setNewWeight(e.target.value)}
@@ -171,7 +173,7 @@ const ExamModal = ({ isOpen, onClose, course }) => {
             </select>
           </div>
           <Button 
-            text={selectedExam ? "Update Exam" : "Add Exam"} 
+            text={selectedExam ? t("updateExam") : t("addExam")} 
             onClick={handleSaveExam} 
             className="hover:bg-[#CA4B4B]"
           />

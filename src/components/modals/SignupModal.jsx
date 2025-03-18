@@ -4,8 +4,10 @@ import { auth, db } from "../../services/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const SignupModal = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +21,7 @@ const SignupModal = ({ isOpen, onClose }) => {
     e.preventDefault();
 
     if(password !== confirmPassword){
-      setError("Passwords do not match!")
+      setError(t("userIdNotAvailable"))
       return;
     }
 
@@ -71,19 +73,19 @@ const SignupModal = ({ isOpen, onClose }) => {
           ✖
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-center">Sign Up</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">{t("signUp")}</h2>
 
         {error && <p className="text-red-500 text-center">{error}</p>}
 
         <form onSubmit={handleSignUp}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Full Name
+              {t("fullName")}
             </label>
             <input 
               type="text" 
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="Enter your full name"
+              placeholder={t("enterFullName")}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -92,12 +94,12 @@ const SignupModal = ({ isOpen, onClose }) => {
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Email
+              {t("email")}
             </label>
             <input 
               type="email" 
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="Enter your email"
+              placeholder={t("enterEmail")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -106,12 +108,12 @@ const SignupModal = ({ isOpen, onClose }) => {
 
           <div className="mb-4 relative">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Password
+              {t("password")}
             </label>
             <input 
               type={showPassword ? "text" : "password"} 
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none pr-12" 
-              placeholder="Enter your password"
+              placeholder={t("enterPassword")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -127,12 +129,12 @@ const SignupModal = ({ isOpen, onClose }) => {
 
           <div className="mb-4 relative">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Confirm Password
+              {t("confirmPassword")}
             </label>
             <input 
               type={showConfirmPassword ? "text" : "password"} 
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none pr-12" 
-              placeholder="Confirm your password"
+              placeholder={t("confirmYourPassword")}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -150,7 +152,7 @@ const SignupModal = ({ isOpen, onClose }) => {
             type="submit"
             className="w-full bg-[#C0C0C0] hover:bg-[#CA4B4B] text-white font-bold py-2 px-4 rounded-lg transition duration-300"
           >
-            Sign Up
+            {t("signUp")}
           </button>
         </form>
       </div>

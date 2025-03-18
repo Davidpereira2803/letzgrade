@@ -4,8 +4,10 @@ import { auth, db} from "../../services/firebase";
 import { FaTrash } from "react-icons/fa"
 import Button from "../ui/Button";
 import ExamModal from "./ExamModal";
+import { useTranslation } from "react-i18next";
 
 const CourseModal = ({ isOpen, onClose, semester }) => {
+  const { t } = useTranslation();
   const [courses, setCourses] = useState([]);
   const [newCourse, setNewCourse] = useState("");
   const [newCredits, setNewCredits] = useState("");
@@ -85,7 +87,7 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
           ✖
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-center">{semester.name} - Courses</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">{t("coursesTitle", { semester: semester.name })}</h2>
 
         <ul className="mb-4">
           {courses.length > 0 ? (
@@ -97,7 +99,7 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
                   onClick={ () => handleCourseClick(course)}
                   >
                   <span>{course.name} ({course.credits} ECTS)</span>
-                  <span>Final Grade: {formatFinalGrade(course.finalGrade)}</span>
+                  <span>{t("finalGrade")}: {formatFinalGrade(course.finalGrade)}</span>
                 </button>
                 <button 
                   onClick={() => handleDeleteCourse(course.id)} 
@@ -108,27 +110,27 @@ const CourseModal = ({ isOpen, onClose, semester }) => {
               </div>
             ))
           ) : (
-            <p className="text-gray-500 text-center">No courses added yet.</p>
+            <p className="text-gray-500 text-center">{t("noCourses")}</p>
           )}
         </ul>
 
         <div className="flex gap-2">
           <input 
             type="text" 
-            placeholder="Course Name" 
+            placeholder={t("courseNamePlaceholder")}
             className="w-full px-3 py-2 border rounded-lg"
             value={newCourse}
             onChange={(e) => setNewCourse(e.target.value)}
           />
           <input 
             type="number" 
-            placeholder="ECTS" 
+            placeholder={t("ectsPlaceholder")} 
             className="w-20 px-3 py-2 border rounded-lg"
             value={newCredits}
             onChange={(e) => setNewCredits(e.target.value)}
           />
           <Button 
-            text="Add" 
+            text={t("addCourse")} 
             onClick={handleAddCourse} 
             className="hover:bg-[#CA4B4B]"
           />

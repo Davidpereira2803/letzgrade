@@ -3,8 +3,10 @@ import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../services/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useTranslation } from "react-i18next";
 
 const LoginModal = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -42,14 +44,14 @@ const LoginModal = ({ isOpen, onClose }) => {
           ✖
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">{t("login")}</h2>
 
         {error && <p className="text-red-500 text-center">{error}</p>}
 
         <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Email
+              {t("email")}
             </label>
             <input 
               type="email" 
@@ -63,7 +65,7 @@ const LoginModal = ({ isOpen, onClose }) => {
 
           <div className="mb-4 relative">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Password
+              {t("password")}
             </label>
             <input 
               type={showPassword ? "text" : "password"} 
@@ -85,9 +87,9 @@ const LoginModal = ({ isOpen, onClose }) => {
           <button 
             type="button"
             className="text-[#C0C0C0] hover:underline text-sm mb-3 block"
-            onClick={() => alert("Forgot password?")}
+            onClick={() => alert(t("forgotPassword"))}
           >
-            Forgot Password?
+            {t("forgotPassword")}
           </button>
 
           <button 

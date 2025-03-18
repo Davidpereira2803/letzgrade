@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { auth, db } from "../services/firebase";
 import { doc, updateDoc, collection, getDocs, onSnapshot } from "firebase/firestore";
 import SemesterModal from "./modals/SemesterModal";
+import { useTranslation } from "react-i18next";
 
 const StudyPrograms = () => {
+  const { t } = useTranslation();
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [studyPrograms, setStudyPrograms] = useState([]);
@@ -90,12 +92,12 @@ const StudyPrograms = () => {
           >
             <h3 className="text-lg font-semibold">{program.name}</h3>
             <p className="text-gray-700 font-medium">
-              GPA: {program.gpa !== null ? `${parseFloat(program.gpa * 100).toFixed(1)} / 100` : "N/A"}
+              {t("gpa")}: {program.gpa !== null ? `${parseFloat(program.gpa * 100).toFixed(1)} / 100` : "N/A"}
             </p>
           </button>
         ))
       ) : (
-        <p className="text-gray-500 text-center">No study programs selected yet.</p>
+        <p className="text-gray-500 text-center">{t("noStudyPrograms")}</p>
       )}
 
       <SemesterModal

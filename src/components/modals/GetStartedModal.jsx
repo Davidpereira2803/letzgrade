@@ -1,4 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 const GetStartedModal = ({ isOpen, onClose, onLoginOpen, onSignUpOpen }) => {
+  const { t } = useTranslation();
+
   if (!isOpen) return null;
 
   return (
@@ -18,9 +22,9 @@ const GetStartedModal = ({ isOpen, onClose, onLoginOpen, onSignUpOpen }) => {
           ✖
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-center">Get Started</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center">{t("getStarted")}</h2>
         <p className="text-center text-gray-600 mb-6">
-          Create an account or log in to track your grades efficiently.
+          {t("getStartedDescription")}
         </p>
 
         <button 
@@ -30,7 +34,7 @@ const GetStartedModal = ({ isOpen, onClose, onLoginOpen, onSignUpOpen }) => {
           }}
           className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mb-3"
         >
-          Sign Up
+          {t("signUp")}
         </button>
 
         <button 
@@ -40,7 +44,7 @@ const GetStartedModal = ({ isOpen, onClose, onLoginOpen, onSignUpOpen }) => {
           }}
           className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300"
         >
-          Log In
+          {t("logIn")}
         </button>
       </div>
     </div>
