@@ -65,6 +65,11 @@
     "confirmPassword": "Confirm Password",
     "confirmYourPassword": "Confirm your password",
     "passwordMismatch": "Passwords do not match!",
-    "userIdNotAvailable": "User ID not available after sign-up. Please try again."
+    "userIdNotAvailable": "User ID not available after sign-up. Please try again.",
+    "enterEmailForReset": "Please enter your email to reset your password.",
+    "resetEmailSent": "A password reset email has been sent to your email address.",
+    "resetEmailError": "Failed to send password reset email. Please check your email and try again.",
+    "studyPrograms": "Study Programs",
+    "semesterGrades": "Semester Grades"
   }
   

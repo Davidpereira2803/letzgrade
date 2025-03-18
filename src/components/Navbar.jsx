@@ -104,17 +104,18 @@ const Navbar = () => {
               </button>
               {isDropdownOpen && (
                 <div className="absolute top-full right-0 mt-2 bg-white border shadow-lg rounded-md z-50">
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-100 transition" onClick={() => changeLanguage("en")}>
-                    English
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-100 transition" onClick={() => changeLanguage("lux")}>
+                    Lëtzebuergesch
                   </button>
+
                   <button className="w-full text-left px-4 py-2 hover:bg-gray-100 transition" onClick={() => changeLanguage("fr")}>
                     Français
                   </button>
                   <button className="w-full text-left px-4 py-2 hover:bg-gray-100 transition" onClick={() => changeLanguage("de")}>
                     Deutsch
                   </button>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-100 transition" onClick={() => changeLanguage("lux")}>
-                    Lëtzebuergesch
+                  <button className="w-full text-left px-4 py-2 hover:bg-gray-100 transition" onClick={() => changeLanguage("en")}>
+                    English
                   </button>
                 </div>
               )}
@@ -143,12 +144,11 @@ const Navbar = () => {
                 <LogOut size={24} />
               </button>
             ) : (
-              <div className="w-8 h-8"></div> // Empty div for layout balance
+              <div className="w-8 h-8"></div>
             )}
           </div>
         </div>
 
-        {/* Mobile/Tablet Menu */}
         {menuOpen && (
           <div className="lg:hidden mt-4 bg-white rounded-md shadow-lg overflow-hidden">
             <div className="p-4 space-y-3 border-b">
@@ -195,7 +195,6 @@ const Navbar = () => {
               </div>
             </div>
             
-            {/* Language Options in Mobile Menu */}
             <div className="p-4 border-t">
               <p className="font-semibold mb-2 text-gray-600 flex items-center">
                 <Languages size={16} className="mr-2" /> {t("selectLanguage")}
@@ -203,27 +202,27 @@ const Navbar = () => {
               <div className="grid grid-cols-2 gap-2">
                 <button 
                   className="text-left px-3 py-2 rounded hover:bg-gray-100 transition"
-                  onClick={() => changeLanguage("en")}
+                  onClick={() => changeLanguage("lux")}
                 >
-                  🇬🇧 English
+                  Lëtzebuergesch
                 </button>
                 <button 
                   className="text-left px-3 py-2 rounded hover:bg-gray-100 transition"
                   onClick={() => changeLanguage("fr")}
                 >
-                  🇫🇷 Français
+                  Français
+                </button>
+                <button 
+                  className="text-left px-3 py-2 rounded hover:bg-gray-100 transition"
+                  onClick={() => changeLanguage("en")}
+                >
+                  English
                 </button>
                 <button 
                   className="text-left px-3 py-2 rounded hover:bg-gray-100 transition"
                   onClick={() => changeLanguage("de")}
                 >
-                  🇩🇪 Deutsch
-                </button>
-                <button 
-                  className="text-left px-3 py-2 rounded hover:bg-gray-100 transition"
-                  onClick={() => changeLanguage("lux")}
-                >
-                  🇱🇺 Lëtzebuergesch
+                  Deutsch
                 </button>
               </div>
             </div>
@@ -231,7 +230,6 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* Modals */}
       <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
       <SignupModal isOpen={isSignupOpen} onClose={() => setIsSignupOpen(false)} />
     </nav>

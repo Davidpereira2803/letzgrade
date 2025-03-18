@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../services/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { useTranslation } from "react-i18next";
 
 const LoginModal = ({ isOpen, onClose }) => {
@@ -11,6 +11,7 @@ const LoginModal = ({ isOpen, onClose }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [resetMessage, setResetMessage] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -22,6 +23,20 @@ const LoginModal = ({ isOpen, onClose }) => {
       navigate("/dashboard");
     } catch (err) {
       setError("Invalid email or password.");
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError(t("enterEmailForReset"));
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setResetMessage(t("resetEmailSent"));
+      setError("");
+    } catch (err) {
+      setError(t("resetEmailError"));
     }
   };
 
@@ -45,6 +60,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         </button>
 
         <h2 className="text-2xl font-bold mb-4 text-center">{t("login")}</h2>
+        {resetMessage && <p className="text-green-500 text-center">{resetMessage}</p>}
 
         {error && <p className="text-red-500 text-center">{error}</p>}
 
@@ -70,7 +86,7 @@ const LoginModal = ({ isOpen, onClose }) => {
             <input 
               type={showPassword ? "text" : "password"} 
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none pr-10"
-              placeholder="Enter your password"
+              placeholder={t("enterPassword")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -87,7 +103,7 @@ const LoginModal = ({ isOpen, onClose }) => {
           <button 
             type="button"
             className="text-[#C0C0C0] hover:underline text-sm mb-3 block"
-            onClick={() => alert(t("forgotPassword"))}
+            onClick={handleForgotPassword}
           >
             {t("forgotPassword")}
           </button>
