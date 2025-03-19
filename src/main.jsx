@@ -10,15 +10,19 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/routes/ProtectedRoute";
 import AddStudyProgram from "./pages/AddStudyProgram";
 import Profile from "./pages/Profile";
+import Policy from "./pages/Policy";
+import TermsOfService from "./pages/TermsOfService";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Router>
       <Routes>
         <Route path="/" element={<App />}>
-          <Route index element={<Home />} />
-          <Route path="about" element={<About />} />
-          <Route path="contact" element={<Contact />} />
+          <Route index element={<Home />}/>
+          <Route path="about" element={<About />}/>
+          <Route path="contact" element={<Contact />}/>
+          <Route path="policy" element={<Policy />}/>
+          <Route path="terms-of-service" element={<TermsOfService />}/>
 
           <Route element={<ProtectedRoute />}>
             <Route path="dashboard" element={<Dashboard />} />
