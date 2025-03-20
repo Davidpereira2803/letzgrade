@@ -1,15 +1,19 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Button from "../components/Button";
-import GetStartedModal from "../components/GetStartedModal";
-import LoginModal from "../components/LoginModal";
-import SignupModal from "../components/SignupModal";
+import { useTranslation } from "react-i18next";
+import "../i18n";
+import Button from "../components/ui/Button";
+import GetStartedModal from "../components/modals/GetStartedModal";
+import LoginModal from "../components/modals/LoginModal";
+import SignupModal from "../components/modals/SignupModal";
 
 const Home = () => {
   const [isGetStartedOpen, setIsGetStartedOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [nextModal, setNextModal] = useState(null);
+
+  const { t, i18n} = useTranslation();
 
   useEffect(() => {
     if (!isGetStartedOpen && nextModal) {
@@ -24,13 +28,14 @@ const Home = () => {
   return (
     <div className="flex items-center justify-center flex-grow">
       <div className="text-white text-center px-4">
-        <h1 className="text-4xl font-bold mb-4">Welcome to LetzGrade</h1>
-        <p className="text-lg mb-6">Track your grades efficiently.</p>
+        <h1 className="text-4xl font-bold mb-4">{t("welcome")}</h1>
+        <p className="text-lg mb-6">{t("slogan")}</p>
 
         <Button
           text="🚀 Get Started"
           onClick={() => setIsGetStartedOpen(true)}
           className="bg-[#C0C0C0] bg-opacity-50 hover:bg-[#CA4B4B] text-white px-6 py-3 rounded-lg transition duration-300"
+          
         />
       </div>
 

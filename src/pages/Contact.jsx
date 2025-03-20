@@ -20,13 +20,14 @@ const Contact = () => {
 
   return (
     <div className="flex flex-col items-center justify-center flex-grow text-center px-4">
-      <h1 className="text-3xl font-bold p-8">Contact Us</h1>
+      <h1 className="text-3xl font-bold p-8 text-white">Contact Us</h1>
 
-      <p className="mb-6">Email: support@letzgrade.com</p>
+      <p className="mb-6 bg-gray-200 p-4 rounded-lg shadow-md" style={{ backgroundColor: "rgba(211, 211, 211, 0.7)" }}>Email: support@letzgrade.com</p>
 
       <form 
         onSubmit={handleSubmit} 
         className="bg-white shadow-md rounded-lg p-6 w-full max-w-lg"
+        style={{ backgroundColor: "rgba(255, 255, 255, 0.9)" }}
       >
         <div className="mb-4 text-left">
           <label className="block text-gray-700 text-sm font-bold mb-2">
