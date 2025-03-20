@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { auth, db } from "../../services/firebase";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth, googleProvider,db } from "../../services/firebase";
+import { createUserWithEmailAndPassword, updateProfile, signInWithPopup  } from "firebase/auth";
 import { doc, setDoc, collection, addDoc, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { FcGoogle } from "react-icons/fc";
+import { X } from "lucide-react";
 
 const SignupModal = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
@@ -54,6 +56,23 @@ const SignupModal = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleGoogleSignUp = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+
+      await setDoc(doc(db, "users", user.uid), {
+        fullName: user.displayName,
+        email: user.email,
+      });
+
+      navigate("/dashboard");
+      onClose();
+    } catch (err) {
+      setError("Google sign-up failed. Please try again.");
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -67,10 +86,10 @@ const SignupModal = ({ isOpen, onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <button 
-          className="absolute top-2 right-2 text-purple-500 hover:text-purple-700 text-xl"
+          className="absolute top-2 right-2 text-[#CA4B4B] hover:text-[#CA4B4B]  text-xl"
           onClick={onClose}
         >
-          ✖
+          <X size={24} strokeWidth={4} />
         </button>
 
         <h2 className="text-2xl font-bold mb-4 text-center">{t("signUp")}</h2>
@@ -155,6 +174,17 @@ const SignupModal = ({ isOpen, onClose }) => {
             {t("signUp")}
           </button>
         </form>
+
+        <div className="flex flex-col gap-3 mt-3">
+          <button 
+            onClick={handleGoogleSignUp} 
+            className="w-full flex items-center justify-center gap-3 bg-[#C0C0C0] hover:bg-[#CA4B4B] text-gray-700 font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300"
+          >
+            <FcGoogle className="w-6 h-6" />
+            {t("signUpWithGoogle")}
+          </button>
+        </div>
+
       </div>
     </div>
   );

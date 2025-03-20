@@ -5,6 +5,7 @@ import { FaTrash } from "react-icons/fa";
 import Button from "../ui/Button";
 import CourseModal from "./CourseModal";
 import { useTranslation } from "react-i18next";
+import { X } from "lucide-react";
 
 const SemesterModal = ({ isOpen, onClose, studyProgram }) => {
   const { t } = useTranslation();
@@ -135,8 +136,8 @@ const SemesterModal = ({ isOpen, onClose, studyProgram }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg min-h-[400px] flex flex-col justify-between relative">
-        <button className="absolute top-2 right-2 text-gray-700 hover:text-red-500 text-xl" onClick={onClose}>
-          ✖
+        <button className="absolute top-2 right-2 text-gray-700 hover:text-[#CA4B4B] text-xl" onClick={onClose}>
+          <X size={24} strokeWidth={4} />
         </button>
 
         <h2 className="text-2xl font-bold mb-4 text-center">{t("semestersTitle", { studyProgram: studyProgram.name })}</h2>

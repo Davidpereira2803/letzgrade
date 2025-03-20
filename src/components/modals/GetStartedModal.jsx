@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { X } from "lucide-react";
 
 const GetStartedModal = ({ isOpen, onClose, onLoginOpen, onSignUpOpen }) => {
   const { t } = useTranslation();
@@ -16,10 +17,10 @@ const GetStartedModal = ({ isOpen, onClose, onLoginOpen, onSignUpOpen }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <button 
-          className="absolute top-2 right-2 text-purple-500 hover:text-purple-700 text-xl"
+          className="absolute top-2 right-2 text-[#CA4B4B] hover:text-[#CA4B4B] text-xl"
           onClick={onClose}
         >
-          ✖
+          <X size={24} strokeWidth={4} />
         </button>
 
         <h2 className="text-2xl font-bold mb-4 text-center">{t("getStarted")}</h2>

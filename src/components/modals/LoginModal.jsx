@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../services/firebase";
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { auth, googleProvider } from "../../services/firebase";
+import { signInWithEmailAndPassword, sendPasswordResetEmail, signInWithPopup } from "firebase/auth";
 import { useTranslation } from "react-i18next";
+import { FcGoogle } from "react-icons/fc";
+import { X } from "lucide-react";
 
 const LoginModal = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
@@ -23,6 +25,16 @@ const LoginModal = ({ isOpen, onClose }) => {
       navigate("/dashboard");
     } catch (err) {
       setError("Invalid email or password.");
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      onClose();
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Google sign-in failed. Please try again.");
     }
   };
 
@@ -53,10 +65,10 @@ const LoginModal = ({ isOpen, onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <button 
-          className="absolute top-2 right-2 text-purple-500 hover:text-purple-700 text-xl"
+          className="absolute top-2 right-2 text-[#CA4B4B] hover:text-[#CA4B4B] text-xl"
           onClick={onClose}
         >
-          ✖
+          <X size={24} strokeWidth={4} />
         </button>
 
         <h2 className="text-2xl font-bold mb-4 text-center">{t("login")}</h2>
@@ -112,9 +124,21 @@ const LoginModal = ({ isOpen, onClose }) => {
             type="submit"
             className="w-full bg-[#C0C0C0] hover:bg-[#CA4B4B] text-white font-bold py-2 px-4 rounded-lg transition duration-300"
           >
-            Login
+            {t("logIn")}
           </button>
         </form>
+
+        <div className="flex flex-col gap-3 mt-3">
+          <button 
+            onClick={handleGoogleSignIn} 
+            className="w-full flex items-center justify-center gap-3 bg-[#C0C0C0] hover:bg-[#CA4B4B] text-gray-700 font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300"
+          >
+
+            <FcGoogle className="w-6 h-6" />
+            {t("signInWithGoogle")}
+          </button>
+        </div>
+
       </div>
     </div>
   );
